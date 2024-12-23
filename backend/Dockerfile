@@ -1,15 +1,15 @@
 FROM openjdk:17-jdk-slim
 WORKDIR /app
 ARG GITHUB_USERNAME
-ARG GITHUB_TOKEN
-RUN echo "GitHub Username: ${GITHUB_USERNAME}" && echo "GitHub Token: ${GITHUB_TOKEN}"
+ARG GITHUB_PAT
+RUN echo "GitHub Username: ${GITHUB_USERNAME}" && echo "GitHub Token: ${GITHUB_PAT}"
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
     curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-RUN git clone https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/latronico96/springboot-jwt-auth.git .
+RUN git clone https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/latronico96/springboot-jwt-auth.git .
 RUN curl -o /app/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
     chmod +x /app/wait-for-it.sh
 RUN chmod +x ./mvnw && \
