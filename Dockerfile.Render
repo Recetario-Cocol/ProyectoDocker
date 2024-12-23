@@ -1,0 +1,36 @@
+# Backend Service
+FROM openjdk:17-jdk-slim as backend
+WORKDIR /app
+ARG GITHUB_USERNAME
+ARG GITHUB_PAT
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    curl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+RUN git clone https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/latronico96/springboot-jwt-auth.git .
+RUN curl -o /app/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
+    chmod +x /app/wait-for-it.sh
+RUN chmod +x ./mvnw && \
+    ./mvnw clean package -DskipTests && \
+    mv target/auth-api-0.0.1-SNAPSHOT.jar app.jar
+RUN chmod +x ./wait-for-it.sh
+
+# Frontend Service
+FROM node:18-alpine as frontend
+WORKDIR /app
+ARG GITHUB_USERNAME
+ARG GITHUB_PAT
+RUN apk add --no-cache git && \
+    git clone https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/latronico96/my-app.git .
+RUN npm install && npm run build
+
+# Final Stage
+FROM nginx:alpine
+COPY --from=frontend /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=backend /app/app.jar /app/app.jar
+COPY --from=backend /app/wait-for-it.sh /app/wait-for-it.sh
+EXPOSE 80 8005
+CMD ["sh", "-c", "./wait-for-it.sh db:3306 -- java -jar /app/app.jar & nginx -g 'daemon off;'"]
