@@ -12,9 +12,11 @@ services:
       - "8081:80" # Frontend en el puerto 8081
       - "8005:8005" # Backend en el puerto 8005
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mydatabase
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: mydatabase
+      DB_USER: root
+      DB_PASSWORD: password
     depends_on:
       db:
         condition: service_healthy
