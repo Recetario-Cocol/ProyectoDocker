@@ -1,56 +1,54 @@
 version: '3.8'
 
 services:
-  backend:
+  app:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.Render
       args:
         GITHUB_USERNAME: ${GITHUB_USERNAME}
-        GITHUB_TOKEN: ${GITHUB_PAT}
+        GITHUB_PAT: ${GITHUB_PAT}
     ports:
+      - "8081:80"
       - "8005:8005"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mydatabase
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/recetario?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+      REACT_APP_API_URL: http://tests:8005
     depends_on:
       db:
         condition: service_healthy
     networks:
       - mynetwork
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        GITHUB_USERNAME: ${GITHUB_USERNAME}
-        GITHUB_TOKEN: ${GITHUB_PAT}
-    ports:
-      - "8081:80"
-    depends_on:
-      - backend
-    networks:
-      - mynetwork
-
+    container_name: app-container
+    
   db:
-    image: mysql:8.0
+    image: mysql:8
     container_name: mysql
     ports:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: mydatabase
+      MYSQL_DATABASE: recetario
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: myuserpassword
+    volumes:
+      - ./app_logs:/app/logs
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
+      test: ["CMD-SHELL", "mysqladmin ping -h db -u root -prootpassword || exit 1"]
+      interval: 15s
       retries: 5
+      timeout: 30s
     networks:
       - mynetwork
+    restart: always
 
 networks:
   mynetwork:
-    driver: bridge      
+    driver: bridge
+    
 volumes:
   mysql_data:
+    driver: local
