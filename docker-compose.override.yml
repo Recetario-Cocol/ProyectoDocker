@@ -9,37 +9,38 @@ services:
         GITHUB_USERNAME: ${GITHUB_USERNAME}
         GITHUB_PAT: ${GITHUB_PAT}
     ports:
-      - "8081:80" # Frontend en el puerto 8081
-      - "8005:8005" # Backend en el puerto 8005
+      - "8081:80"
+      - "8005:8005"
     environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_NAME: mydatabase
-      DB_USER: root
-      DB_PASSWORD: password
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/recetario?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+      REACT_APP_API_URL: http://tests:8005
     depends_on:
       db:
         condition: service_healthy
     networks:
       - mynetwork
     container_name: app-container
-
+    
   db:
     image: mysql:8
     container_name: mysql
     ports:
       - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: user
-      MYSQL_PASSWORD: userpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: recetario
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: myuserpassword
     volumes:
+      - ./app_logs:/app/logs
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -ppassword || exit 1"]
-      interval: 10s
+      test: ["CMD-SHELL", "mysqladmin ping -h db -u root -prootpassword || exit 1"]
+      interval: 15s
       retries: 5
+      timeout: 30s
     networks:
       - mynetwork
     restart: always
@@ -47,6 +48,7 @@ services:
 networks:
   mynetwork:
     driver: bridge
-
+    
 volumes:
   mysql_data:
+    driver: local
