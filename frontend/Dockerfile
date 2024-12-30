@@ -2,7 +2,8 @@ FROM node:18-alpine as build
 WORKDIR /app
 ARG GITHUB_USERNAME
 ARG GITHUB_PAT
-RUN apk add --no-cache git && \
+ARG REACT_APP_API_URL
+RUN apk add git && \
     git clone https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/latronico96/my-app.git .
 RUN npm install && npm run build
 FROM nginx:alpine

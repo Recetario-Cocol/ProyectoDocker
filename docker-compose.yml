@@ -7,13 +7,18 @@ services:
       dockerfile: Dockerfile
       args:
         GITHUB_USERNAME: ${GITHUB_USERNAME}
-        GITHUB_TOKEN: ${GITHUB_PAT}
+        GITHUB_PAT: ${GITHUB_PAT}
+        SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: password
     ports:
       - "8005:8005"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mydatabase
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
+      - GITHUB_USERNAME=${GITHUB_USERNAME}
+      - GITHUB_PAT=${GITHUB_PAT}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=password
     depends_on:
       - db
     networks:
@@ -25,7 +30,8 @@ services:
       dockerfile: Dockerfile
       args:
         GITHUB_USERNAME: ${GITHUB_USERNAME}
-        GITHUB_TOKEN: ${GITHUB_PAT}
+        GITHUB_PAT: ${GITHUB_PAT}
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
     ports:
       - "8081:80"
     depends_on:
@@ -40,7 +46,7 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: mydatabase
+      MYSQL_DATABASE: recetario
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -50,6 +56,7 @@ services:
 
 networks:
   mynetwork:
-    driver: bridge      
+    driver: bridge
+
 volumes:
   mysql_data:
