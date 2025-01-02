@@ -1,10 +1,10 @@
 version: '3.9'
 services:
   backend:
-    image: latronico96/pasteleria-backend:latest # Imagen del backend
+    image: latronico96/pasteleria-backend:latest
     container_name: pasteleria-backend
     ports:
-      - "8080:8080" # Mapea el puerto 8080 del contenedor al 8080 del host
+      - "8005:8005"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/recetario?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
@@ -14,28 +14,28 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: latronico96/pasteleria-frontend:latest # Imagen del frontend
+    image: latronico96/pasteleria-frontend:latest
     container_name: pasteleria-frontend
     ports:
-      - "80:80" # Mapea el puerto 80 del contenedor al 80 del host
+      - "80:80"
     environment:
-      - REACT_APP_API_URL=http://localhost:8080/api # URL del backend
+      - REACT_APP_API_URL=http://localhost:8080/api
     depends_on:
       - backend
     restart: unless-stopped
 
   database:
-    image: latronico96/mysql:8 # Imagen personalizada de MySQL
+    image: latronico96/mysql:8
     container_name: pasteleria-database
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword # Contraseña de root
-      MYSQL_DATABASE: recetario       # Nombre de la base de datos
-      MYSQL_USER: user                   # Usuario adicional
-      MYSQL_PASSWORD: userpassword       # Contraseña para el usuario adicional
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: recetario
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
     volumes:
-      - mysql_data:/var/lib/mysql # Volumen persistente para datos de MySQL
+      - mysql_data:/var/lib/mysql
     ports:
-      - "3306:3306" # Puerto de MySQL
+      - "3306:3306"
     restart: unless-stopped
     deploy:
       resources:
