@@ -1,62 +1,43 @@
-version: '3.8'
-
+version: '3.9'
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-      args:
-        GITHUB_USERNAME: ${GITHUB_USERNAME}
-        GITHUB_PAT: ${GITHUB_PAT}
-        SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-        SPRING_DATASOURCE_USERNAME: root
-        SPRING_DATASOURCE_PASSWORD: password
+    image: latronico96/pasteleria-backend:latest # Imagen del backend
+    container_name: pasteleria-backend
     ports:
-      - "8005:8005"
+      - "8080:8080" # Mapea el puerto 8080 del contenedor al 8080 del host
     environment:
-      - GITHUB_USERNAME=${GITHUB_USERNAME}
-      - GITHUB_PAT=${GITHUB_PAT}
-      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/pasteleria_db
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_DATASOURCE_PASSWORD=securepassword
     depends_on:
-      - db
-    networks:
-      - mynetwork
+      - database
+    restart: unless-stopped
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        GITHUB_USERNAME: ${GITHUB_USERNAME}
-        GITHUB_PAT: ${GITHUB_PAT}
-        REACT_APP_API_URL: ${REACT_APP_API_URL}
+    image: latronico96/pasteleria-frontend:latest # Imagen del frontend
+    container_name: pasteleria-frontend
     ports:
-      - "8081:80"
+      - "80:80" # Mapea el puerto 80 del contenedor al 80 del host
+    environment:
+      - REACT_APP_API_URL=http://localhost:8080/api # URL del backend
     depends_on:
       - backend
-    networks:
-      - mynetwork
+    restart: unless-stopped
 
-  db:
-    image: mysql:8
-    container_name: mysql
-    ports:
-      - "3306:3306"
+  database:
+    image: latronico96/mysql:8 # Imagen personalizada de MySQL
+    container_name: pasteleria-database
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: recetario
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      retries: 5
-    networks:
-      - mynetwork
-
-networks:
-  mynetwork:
-    driver: bridge
+      MYSQL_ROOT_PASSWORD: rootpassword # Contraseña de root
+      MYSQL_DATABASE: recetario       # Nombre de la base de datos
+      MYSQL_USER: user                   # Usuario adicional
+      MYSQL_PASSWORD: userpassword       # Contraseña para el usuario adicional
+    volumes:
+      - mysql_data:/var/lib/mysql # Volumen persistente para datos de MySQL
+    ports:
+      - "3306:3306" # Puerto de MySQL
+    restart: unless-stopped
 
 volumes:
   mysql_data:
+    driver: local
