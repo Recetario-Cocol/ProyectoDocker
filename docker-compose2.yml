@@ -1,0 +1,66 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+        GITHUB_PAT: ${GITHUB_PAT}
+        SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "8005:8005"
+    environment:
+      - GITHUB_USERNAME=${GITHUB_USERNAME}
+      - GITHUB_PAT=${GITHUB_PAT}
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=password
+      - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN}
+    depends_on:
+      - database
+    networks:
+      - mynetwork
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+        GITHUB_PAT: ${GITHUB_PAT}
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+    networks:
+      - mynetwork
+
+  database:
+    image: mysql:8
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: recetario
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+    networks:
+      - mynetwork
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+          cpus: '0.5'
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  mysql_data:

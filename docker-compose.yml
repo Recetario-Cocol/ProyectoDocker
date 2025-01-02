@@ -18,7 +18,7 @@ services:
     image: latronico96/pasteleria-frontend:latest
     container_name: pasteleria-frontend
     ports:
-      - "80:80"
+      - "8081:80"
     environment:
       - REACT_APP_API_URL=http://localhost:8080/api
     depends_on:
