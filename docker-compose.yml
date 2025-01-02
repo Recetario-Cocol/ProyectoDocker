@@ -1,31 +1,30 @@
 version: '3.9'
 services:
   backend:
+    env_file:
+      - .env
     image: latronico96/pasteleria-backend:latest
     container_name: pasteleria-backend
     ports:
       - "8005:8005"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/recetario?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=rootpassword
-      - CORS_ALLOWED_ORIGIN=http://localhost:8005
     depends_on:
       - database
     restart: unless-stopped
 
   frontend:
+    env_file:
+      - .env
     image: latronico96/pasteleria-frontend:latest
     container_name: pasteleria-frontend
     ports:
       - "8081:80"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8080/api
     depends_on:
       - backend
     restart: unless-stopped
 
   database:
+    env_file:
+      - .env
     image: latronico96/mysql:8
     container_name: pasteleria-database
     environment:
