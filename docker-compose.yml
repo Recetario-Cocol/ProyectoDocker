@@ -6,9 +6,9 @@ services:
     ports:
       - "8080:8080" # Mapea el puerto 8080 del contenedor al 8080 del host
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/pasteleria_db
+      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/recetario?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=securepassword
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
     depends_on:
       - database
     restart: unless-stopped
