@@ -28,7 +28,7 @@ RUN apt-get update && \
 
 
 # Clona el repositorio de GitHub
-RUN git clone https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/latronico96/springboot-jwt-auth.git .
+RUN git clone https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/Recetario-Cocol/hub .
 
 # Espera a que la base de datos esté lista
 RUN curl -o /app/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh && \
@@ -44,4 +44,4 @@ RUN chmod +x ./wait-for-it.sh
 
 EXPOSE 8005
 
-ENTRYPOINT ["./wait-for-it.sh", "db:3306", "--", "java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["./wait-for-it.sh", "database:3306", "--", "java", "-jar", "/app/app.jar"]
