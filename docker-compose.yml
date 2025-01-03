@@ -28,7 +28,7 @@ services:
     image: latronico96/mysql:8
     container_name: pasteleria-database
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: recetario
       MYSQL_USER: user
       MYSQL_PASSWORD: userpassword

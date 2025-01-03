@@ -1,5 +1,7 @@
 services:
   backend:
+    env_file:
+      - .env
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -17,13 +19,14 @@ services:
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=password
-      - CORS_ALLOWED_ORIGIN=${CORS_ALLOWED_ORIGIN}
     depends_on:
       - database
     networks:
       - mynetwork
 
   frontend:
+    env_file:
+      - .env
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -31,6 +34,8 @@ services:
         GITHUB_USERNAME: ${GITHUB_USERNAME}
         GITHUB_PAT: ${GITHUB_PAT}
         REACT_APP_API_URL: ${REACT_APP_API_URL}
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
     ports:
       - "8081:80"
     depends_on:
@@ -39,6 +44,8 @@ services:
       - mynetwork
 
   database:
+    env_file:
+      - .env
     image: mysql:8
     container_name: mysql
     ports:
