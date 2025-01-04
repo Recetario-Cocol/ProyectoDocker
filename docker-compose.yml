@@ -2,7 +2,19 @@ services:
   backend:
     env_file:
       - .env
-    image: latronico96/pasteleria-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        GITHUB_USERNAME: ${GITHUB_USERNAME}
+        GITHUB_PAT: ${GITHUB_PAT}
+        SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+        SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+        SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+    environment:
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
     container_name: pasteleria-backend
     ports:
       - "8005:8005"
@@ -13,9 +25,13 @@ services:
   frontend:
     env_file:
       - .env
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
     environment:
       - REACT_APP_API_URL=${REACT_APP_API_URL}
-    image: latronico96/pasteleria-frontend:latest
     container_name: pasteleria-frontend
     ports:
       - "8081:80"
