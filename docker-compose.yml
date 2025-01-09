@@ -22,7 +22,7 @@ services:
       - REACT_APP_API_URL=${REACT_APP_API_URL}
     container_name: pasteleria-frontend
     ports:
-      - "8081:80"
+      - "8081:3000"
     depends_on:
       - backend
     restart: unless-stopped

@@ -6,5 +6,5 @@ ARG REACT_APP_API_URL
 RUN git clone https://${GITHUB_USERNAME}:${GITHUB_PAT}@github.com/Recetario-Cocol/ReactFrontend.git .
 RUN npm install
 RUN npm run build
-EXPOSE 80
+EXPOSE 3000
 CMD ["npm", "start"]
