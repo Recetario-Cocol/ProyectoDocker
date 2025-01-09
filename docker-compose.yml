@@ -13,8 +13,6 @@ services:
     depends_on:
       - database
     restart: unless-stopped
-    mem_limit: 512m
-    cpus: 0.5
 
   frontend:
     env_file:
@@ -28,9 +26,6 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-    # Define limits in the resources section, but outside deploy
-    mem_limit: 512m
-    cpus: 0.5
 
   database:
     env_file:
@@ -47,8 +42,6 @@ services:
     ports:
       - "3306:3306"
     restart: unless-stopped
-    mem_limit: 500m
-    cpus: 0.5
 
 volumes:
   mysql_data:
