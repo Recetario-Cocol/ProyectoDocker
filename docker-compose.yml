@@ -30,7 +30,7 @@ services:
   database:
     env_file:
       - .env
-    image: latronico96/mysql:8
+    image: mysql:8.0
     container_name: pasteleria-database
     environment:
       MYSQL_ROOT_PASSWORD: password
