@@ -1,0 +1,45 @@
+services:
+  backend:
+    build:
+      context: ../hub
+      args:
+        ENVIRONMENT: development
+    volumes:
+      - ../hub:/app
+    command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      DJANGO_DATABASES_PATH: /app/db.sqlite3
+      DJANGO_STATIC_FRONTEND_URL: http://localhost:3000
+      DJANGO_REDIS_SERVER: redis://redis:6379/
+      REDIS_HOST: redis
+    ports:
+      - "8000:8000"
+    working_dir: /app
+
+
+  celery:
+    build:
+      context: ../hub
+      args:
+        ENVIRONMENT: development
+    volumes:
+      - ../hub:/app
+    command: celery -A hub worker --loglevel=info
+    environment:
+      DJANGO_DATABASES_PATH: /app/db.sqlite3
+      DJANGO_REDIS_SERVER: redis://redis:6379/
+      REDIS_HOST: redis
+      PYTHONPATH: /app
+    working_dir: /app
+
+  frontend:
+    build:
+      context: ../frontend
+    volumes:
+      - ../frontend:/app
+    command: npm start
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_API_URL=http://localhost:8000
+    ports:
+      - "3000:3000"

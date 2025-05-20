@@ -1,35 +1,39 @@
-version: '3.8'
-
 services:
   backend:
+    build:
+      args:
+        ENVIRONMENT: production
     image: latronico96/hub-backend:latest
     command: sh -c "python manage.py migrate --noinput && gunicorn hub.wsgi:application --bind 0.0.0.0:8000"
     restart: unless-stopped
-    volumes:
-      - sqlite_data:/data
     environment:
       DJANGO_SETTINGS_MODULE: hub.settings
       DJANGO_DATABASES_PATH: /data/db.sqlite3
       DJANGO_STATIC_FRONTEND_URL: http://recetascocol.com.ar
       DJANGO_REDIS_SERVER: redis://redis:6379/
       REDIS_HOST: redis
+    volumes:
+      - sqlite_data:/data
     ports:
       - "8000:8000"
     depends_on:
       - redis
 
   celery:
+    build:
+      args:
+        ENVIRONMENT: production
     image: latronico96/hub-backend:latest
     command: celery -A hub worker --loglevel=info
     restart: unless-stopped
-    volumes:
-      - sqlite_data:/data
     environment:
       DJANGO_SETTINGS_MODULE: hub.settings
       DJANGO_DATABASES_PATH: /data/db.sqlite3
       DJANGO_STATIC_FRONTEND_URL: http://recetascocol.com.ar
       DJANGO_REDIS_SERVER: redis://redis:6379/
       REDIS_HOST: redis
+    volumes:
+      - sqlite_data:/data
     depends_on:
       - redis
 
