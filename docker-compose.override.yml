@@ -4,8 +4,11 @@ services:
       context: ../hub
       args:
         ENVIRONMENT: development
+    image: ""
     volumes:
-      - ../hub:/app
+      - ../hub:/app:cached
+      - ../hub/.flake8:/app/.flake8
+      - ../hub/.pylintrc:/app/.pylintrc
     command: python manage.py runserver 0.0.0.0:8000
     environment:
       DJANGO_DATABASES_PATH: /app/db.sqlite3
@@ -22,8 +25,11 @@ services:
       context: ../hub
       args:
         ENVIRONMENT: development
+    image: ""
     volumes:
-      - ../hub:/app
+      - ../hub:/app:cached
+      - ../hub/.flake8:/app/.flake8
+      - ../hub/.pylintrc:/app/.pylintrc
     command: celery -A hub worker --loglevel=info
     environment:
       DJANGO_DATABASES_PATH: /app/db.sqlite3
@@ -35,11 +41,18 @@ services:
   frontend:
     build:
       context: ../frontend
-    volumes:
-      - ../frontend:/app
-    command: npm start
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - REACT_APP_API_URL=http://localhost:8000
+      args:
+        REACT_APP_API_URL: http://localhost:8000
+        ENVIRONMENT: development
+    image: ""
     ports:
       - "3000:3000"
+    environment:
+      - ENVIRONMENT=development
+      - REACT_APP_API_URL=http://localhost:8000
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+
