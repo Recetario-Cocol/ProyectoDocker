@@ -58,7 +58,7 @@ services:
       - redis_data:/data
 
   frontend:
-    image: frontend-app:latest
+    image: latronico96/frontend:latest
     ports:
       - "80:3000"
 
