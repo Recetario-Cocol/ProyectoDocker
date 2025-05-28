@@ -41,6 +41,7 @@ services:
   frontend:
     build:
       context: ../frontend
+      dockerfile: Dockerfile.dev
       args:
         REACT_APP_API_URL: http://localhost:8000
         ENVIRONMENT: development
